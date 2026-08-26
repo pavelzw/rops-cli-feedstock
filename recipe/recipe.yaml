@@ -18,6 +18,11 @@ build:
       CARGO_PROFILE_RELEASE_STRIP: symbols
       CARGO_PROFILE_RELEASE_LTO: fat
     content:
+      - if: ppc64le
+        then:
+          # Rust 1.90 uses lld by default and has issue linking to conda libraries
+          # compiled with newer gcc
+          - export RUSTFLAGS="$RUSTFLAGS -C link-arg=-fuse-ld=bfd"
       - if: unix
         then:
           - cargo auditable install --locked --no-track --bins --root ${{ PREFIX }} --path crates/cli
